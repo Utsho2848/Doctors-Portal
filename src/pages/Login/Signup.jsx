@@ -2,15 +2,26 @@ import React from 'react';
 import { useForm } from "react-hook-form";
 import { Link } from 'react-router-dom';
 
-const Login = () => {
+const Signup = () => {
     const { register, formState: { errors }, handleSubmit } = useForm();
-    const handleLogin = (data) => {
+    const handleSignin = (data) => {
         console.log(data)
     }
     return (
         <div className=' card shadow-2xl lg:my-40 w-[385px] min-h-[480px] mx-auto p-8 pb-8'>
-            <h2 className='text-2xl font-semibold text-center'>Login</h2>
-            <form className='grid grid-cols-1' onSubmit={handleSubmit(handleLogin)}>
+            <h2 className='text-2xl font-semibold text-center'>Sign Up</h2>
+            <form className='grid grid-cols-1' onSubmit={handleSubmit(handleSignin)}>
+                <div className='form-control'>
+                    <label className="label">
+                        <span className="label-text">Full Name</span>
+                    </label>
+                    <input {...register("name", { required: "*Name is required" })} type="text" className='input input-bordered w-full' />
+                    <p className='text-red-600 mt-1 text-sm'>
+                        {
+                            errors.name && <p role="alert">{errors.name?.message}</p>
+                        }
+                    </p>
+                </div>
                 <div className='form-control'>
                     <label className="label">
                         <span className="label-text">Email</span>
@@ -37,10 +48,10 @@ const Login = () => {
                         }
                     </p>
                 </div><br />
-                <input className='btn btn-accent w-full text-white' value="Login" type="submit"></input>
+                <input className='btn btn-accent w-full text-white' value="Sign Up" type="submit"></input>
                 <label className="label">
-                    <span className="label-text">New to Doctors Portal</span>
-                    <Link to="/signup" className="label-text-alt link link-hover text-primary">Create new Account</Link>
+                    <span className="label-text">Already have an account?</span>
+                    <Link to="/login" className="label-text-alt link link-hover text-primary">Sign Up</Link>
                 </label>
                 <h2 className='text-2xl font-semibold divider'>OR</h2>
                 <button className='btn btn-outline btn-primary'>Continue With Google</button>
@@ -50,4 +61,4 @@ const Login = () => {
     );
 };
 
-export default Login;
+export default Signup;
