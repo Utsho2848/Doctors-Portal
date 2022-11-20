@@ -1,11 +1,33 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useForm } from "react-hook-form";
-import { Link } from 'react-router-dom';
+import { Link,useLocation,useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthProvider';
+
 
 const Login = () => {
+    const { logIn } = useContext(AuthContext)
     const { register, formState: { errors }, handleSubmit } = useForm();
+    const [loginError, setLoginError] = useState('')
+    const location= useLocation()
+    const navigate=useNavigate()
+
+    const from=location.state?.from?.pathname || '/'
+
     const handleLogin = (data) => {
+        setLoginError('')
         console.log(data)
+        const email = data.email;
+        const password = data.password;
+        logIn(email, password)
+            .then(res => {
+                const user = res.user;
+                console.log(user)
+                navigate(from,{replace:true})
+            })
+            .catch(err => {
+                setLoginError(err.message)
+                console.error(err)
+            })
     }
     return (
         <div className=' card shadow-2xl lg:my-40 w-[385px] min-h-[480px] mx-auto p-8 pb-8'>
@@ -36,6 +58,11 @@ const Login = () => {
                             errors.password && <p role="alert">{errors.password?.message}</p>
                         }
                     </p>
+                    <div>
+                        {
+                            loginError && <p className='text-red-600 mt-1 text-sm'>{loginError}</p>
+                        }
+                    </div>
                 </div><br />
                 <input className='btn btn-accent w-full text-white' value="Login" type="submit"></input>
                 <label className="label">
