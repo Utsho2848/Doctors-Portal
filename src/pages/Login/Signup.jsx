@@ -3,16 +3,24 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthProvider';
 import toast from 'react-hot-toast';
+import useToken from '../../hooks/useToken';
 
 const Signup = () => {
     const { createUser, updateUser } = useContext(AuthContext)
     const { register, formState: { errors }, handleSubmit } = useForm();
     const [signUpError, setSignUpError] = useState('')
+
+    const [createdUserEmail, setCreatedUserEmail] = useState('')
+    const [token] = useToken(createdUserEmail)
+
     const navigate = useNavigate()
+
+    if (token) {
+        navigate('/')
+    }
 
 
     const handleSignin = (data) => {
-        console.log(data)
         setSignUpError('')
         const email = data.email;
         const password = data.password;
@@ -26,7 +34,7 @@ const Signup = () => {
                 }
                 updateUser(userInfo)
                     .then(() => {
-                        navigate('/')
+                        saveUser(data.name, data.email)
                     })
                     .catch(err => console.error(err))
             })
@@ -35,6 +43,32 @@ const Signup = () => {
                 setSignUpError(err.message)
             })
     }
+
+    const saveUser = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('save user', data)
+                setCreatedUserEmail(email);
+
+            })
+    }
+    // const getUserToken = email => {
+    //     fetch(`http://localhost:5000/jwt?email=${email}`)
+    //         .then(res => res.json())
+    //         .then(data => {
+    //             if (data.accessToken) {
+    //                 localStorage.setItem('accessToken', data.accessToken);
+    //             }
+    //         })
+    // }
     return (
         <div className=' card shadow-2xl lg:my-40 w-[385px] min-h-[480px] mx-auto p-8 pb-8'>
             <h2 className='text-2xl font-semibold text-center'>Sign Up</h2>
